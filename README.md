@@ -1,6 +1,23 @@
-# Getting Started with Create React App
+# Order Management Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React TypeScript frontend for the AWS SQS Order Management System.
+
+## Features
+
+- 🛒 **Order Submission**: Submit orders to AWS SQS queue via API Gateway
+- 📋 **Order History**: View submitted orders with real-time status updates
+- 🎨 **Modern UI**: Clean, responsive design with animations
+- 🔄 **Real-time Updates**: Visual feedback for order processing stages
+- 📱 **Mobile Friendly**: Responsive design that works on all devices
+
+## API Configuration
+
+The frontend is configured to connect to your AWS API Gateway endpoint:
+
+- **Base URL**: `https://u62q7jktce.execute-api.us-east-2.amazonaws.com/prod`
+- **Orders Endpoint**: `POST /orders`
+
+To change the API endpoint, edit the `API_BASE_URL` in `src/services/api.ts`.
 
 ## Available Scripts
 
