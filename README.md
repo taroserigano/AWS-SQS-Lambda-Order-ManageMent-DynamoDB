@@ -2,6 +2,10 @@
 
 A React TypeScript frontend for the AWS SQS Order Management System.
 
+<img width="1102" height="1045" alt="image" src="https://github.com/user-attachments/assets/a16e55b3-44b6-4fa2-ad4a-a245d4c3d577" />
+<img width="1300" height="1079" alt="image" src="https://github.com/user-attachments/assets/0cb7c819-530f-451b-848c-2beac2bae726" />
+
+
 ## Features
 
 - 🛒 **Order Submission**: Submit orders to AWS SQS queue via API Gateway
