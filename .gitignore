@@ -1,0 +1,299 @@
+# ========================================
+# AWS SQS Order Management System - .gitignore
+# ========================================
+
+# ========================================
+# GENERAL FILES
+# ========================================
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*~
+
+# Editor and IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# ========================================
+# NODE.JS / NPM
+# ========================================
+
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Grunt intermediate storage
+.grunt
+
+# Bower dependency directory
+bower_components
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# parcel-bundler cache
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+out
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
+
+# ========================================
+# AWS CDK SPECIFIC
+# ========================================
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out/
+
+# CDK Context files
+cdk.context.json
+
+# CDK deployment files
+*.zip
+
+# CloudFormation templates
+*.template.json
+*.template.yaml
+
+# AWS SAM
+.aws-sam/
+
+# ========================================
+# REACT / FRONTEND SPECIFIC
+# ========================================
+
+# Production build
+build/
+dist/
+
+# Static files
+/static/js/*.js
+/static/css/*.css
+/static/media/*
+
+# Storybook
+storybook-static/
+
+# React testing
+# See https://facebook.github.io/create-react-app/docs/running-tests for more information.
+/coverage
+
+# Miscellaneous
+.eslintcache
+
+# ========================================
+# TYPESCRIPT
+# ========================================
+
+# Compiled JavaScript files
+*.js
+*.js.map
+*.d.ts
+
+# But keep important JS config files
+!jest.config.js
+!craco.config.js
+!webpack.config.js
+!rollup.config.js
+!gulpfile.js
+!Gruntfile.js
+!karma.conf.js
+!protractor.conf.js
+
+# Keep CDK entry point
+!bin/*.js
+
+# Keep Lambda handler if compiled
+!src/lambda/*.js
+
+# TypeScript cache
+*.tsbuildinfo
+
+# ========================================
+# TESTING
+# ========================================
+
+# Jest
+coverage/
+*.lcov
+junit.xml
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+
+# ========================================
+# LOGS
+# ========================================
+
+# Log files
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# ========================================
+# AWS SPECIFIC
+# ========================================
+
+# AWS CLI
+.aws/
+
+# Terraform (if used alongside CDK)
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Serverless Framework (if used)
+.serverless/
+
+# ========================================
+# SECURITY & SECRETS
+# ========================================
+
+# Environment variables
+.env*
+!.env.example
+
+# API keys and secrets
+secrets.json
+config/secrets.json
+.secrets
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+*.csr
+
+# ========================================
+# DEPLOYMENT & CI/CD
+# ========================================
+
+# Docker
+Dockerfile.prod
+docker-compose.override.yml
+
+# GitHub Actions (keep workflows but ignore generated files)
+.github/workflows/*.log
+
+# Deployment artifacts
+deployment/
+artifacts/
+
+# ========================================
+# MISCELLANEOUS
+# ========================================
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Temporary files
+*.tmp
+*.temp
+
+# ========================================
+# PROJECT SPECIFIC
+# ========================================
+
+# API testing results
+api-test-results.json
+
+# Order export files (if you want to exclude them)
+orders-export-*.json
+
+# Local development overrides
+config.local.json
+settings.local.json
+
+# Performance monitoring
+.clinic/
+.0x/
+
+# Bundle analysis
+bundle-analyzer-report.html
