@@ -12,9 +12,23 @@ import {
 // Import AWS SDK v3 for SQS operations (newer, more efficient than v2)
 import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
 
+// Import AWS SDK v3 for DynamoDB operations
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import {
+  DynamoDBDocumentClient,
+  PutCommand,
+  ScanCommand,
+} from "@aws-sdk/lib-dynamodb";
+
 // Initialize SQS client with region configuration
 // Uses environment variable or defaults to us-east-2
 const sqs = new SQSClient({ region: process.env.AWS_REGION || "us-east-2" });
+
+// Initialize DynamoDB client
+const ddbClient = new DynamoDBClient({
+  region: process.env.AWS_REGION || "us-east-2",
+});
+const dynamodb = DynamoDBDocumentClient.from(ddbClient);
 
 // ========================================
 // PRODUCER LAMBDA FUNCTION
@@ -63,11 +77,11 @@ export const producer = async (
     // SQS MESSAGE SENDING
     // ========================================
 
-    // Send message to SQS queue using AWS SDK v3
+    // Send complete order data to SQS queue (not just orderId)
     await sqs.send(
       new SendMessageCommand({
         QueueUrl: process.env.QUEUE_URL!, // Queue URL provided by CDK as environment variable
-        MessageBody: JSON.stringify({ orderId }), // Serialize order data as JSON string
+        MessageBody: JSON.stringify(body), // Send entire order object
         // Additional options available:
         // - DelaySeconds: Delay before message becomes visible
         // - MessageAttributes: Custom metadata
@@ -167,18 +181,37 @@ export const consumer = async (event: SQSEvent): Promise<void> => {
       // ========================================
 
       // Parse the JSON message body sent by the producer
-      const { orderId } = JSON.parse(message.body);
-      console.log("Processing order:", orderId);
+      const orderData = JSON.parse(message.body);
+      console.log("Processing order:", orderData.orderId);
+
+      // ========================================
+      // SAVE ORDER TO DYNAMODB
+      // ========================================
+
+      // Save the complete order data to DynamoDB
+      await dynamodb.send(
+        new PutCommand({
+          TableName: process.env.TABLE_NAME!,
+          Item: {
+            ...orderData,
+            // Ensure timestamp is stored as ISO string
+            timestamp: orderData.timestamp || new Date().toISOString(),
+            // Add processing timestamp
+            processedAt: new Date().toISOString(),
+          },
+        })
+      );
+
+      console.log("Order saved to DynamoDB:", orderData.orderId);
 
       // ========================================
       // BUSINESS LOGIC PROCESSING
       // ========================================
 
-      // Simulate actual order processing (replace with real business logic)
-      // Examples: Database updates, external API calls, inventory checks, etc.
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Simulate additional processing (e.g., notifications, inventory updates)
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      console.log("Finished processing order:", orderId);
+      console.log("Finished processing order:", orderData.orderId);
 
       // ========================================
       // SUCCESS HANDLING
@@ -201,5 +234,78 @@ export const consumer = async (event: SQSEvent): Promise<void> => {
       // 3. Eventually send to Dead Letter Queue if retries exhausted
       throw error;
     }
+  }
+};
+
+// ========================================
+// GET ORDERS LAMBDA FUNCTION
+// ========================================
+/**
+ * Get Orders Lambda: Retrieves all orders from DynamoDB
+ *
+ * Flow:
+ * 1. Frontend sends GET request to API Gateway
+ * 2. API Gateway triggers this Lambda function
+ * 3. Lambda scans DynamoDB table to retrieve all orders
+ * 4. Returns orders array to frontend
+ *
+ * @param event - API Gateway HTTP event
+ * @returns Promise<APIGatewayProxyResult> - HTTP response with orders array
+ */
+export const getOrders = async (
+  event: APIGatewayProxyEvent
+): Promise<APIGatewayProxyResult> => {
+  console.log("GetOrders received event:", JSON.stringify(event, null, 2));
+
+  try {
+    // ========================================
+    // RETRIEVE ORDERS FROM DYNAMODB
+    // ========================================
+
+    const result = await dynamodb.send(
+      new ScanCommand({
+        TableName: process.env.TABLE_NAME!,
+      })
+    );
+
+    console.log(`Retrieved ${result.Items?.length || 0} orders from DynamoDB`);
+
+    // ========================================
+    // SUCCESS RESPONSE
+    // ========================================
+
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      },
+      body: JSON.stringify({
+        orders: result.Items || [],
+      }),
+    };
+  } catch (error) {
+    // ========================================
+    // ERROR HANDLING
+    // ========================================
+
+    console.error("Error retrieving orders:", error);
+
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error occurred";
+
+    return {
+      statusCode: 500,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      },
+      body: JSON.stringify({
+        message: "Error retrieving orders",
+        error: errorMessage,
+      }),
+    };
   }
 };

@@ -7,6 +7,7 @@ import * as apigateway from "aws-cdk-lib/aws-apigateway"; // For REST API creati
 import * as path from "path";
 import * as sqs from "aws-cdk-lib/aws-sqs"; // For Simple Queue Service
 import * as lambdaEventSources from "aws-cdk-lib/aws-lambda-event-sources";
+import * as dynamodb from "aws-cdk-lib/aws-dynamodb"; // For DynamoDB tables
 
 /**
  * FirstSqsStack: AWS Infrastructure Stack for Order Processing System
@@ -29,6 +30,19 @@ export class FirstSqsStack extends cdk.Stack {
     const dlq = new sqs.Queue(this, "OrdersDLQ", {
       queueName: `${this.stackName}-orders-dlq`,
       removalPolicy: cdk.RemovalPolicy.DESTROY, // Delete queue when stack is destroyed (dev only)
+    });
+
+    // ========================================
+    // DYNAMODB TABLE CONFIGURATION
+    // ========================================
+    // DynamoDB table for persistent order storage
+    const ordersTable = new dynamodb.Table(this, "OrdersTable", {
+      tableName: `${this.stackName}-orders`,
+      partitionKey: { name: "orderId", type: dynamodb.AttributeType.STRING },
+      sortKey: { name: "timestamp", type: dynamodb.AttributeType.STRING },
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST, // On-demand pricing
+      removalPolicy: cdk.RemovalPolicy.DESTROY, // For development
+      pointInTimeRecovery: false, // Enable in production
     });
 
     // ========================================
@@ -78,7 +92,13 @@ export class FirstSqsStack extends cdk.Stack {
       entry: path.join(__dirname, "../src/lambda/handler.ts"),
       handler: "consumer", // Different handler function in the same file
       functionName: `${this.stackName}-consumer`,
+      environment: {
+        TABLE_NAME: ordersTable.tableName,
+      },
     });
+
+    // Grant the consumer Lambda permission to write to DynamoDB
+    ordersTable.grantWriteData(consumerLambda);
 
     // Configure SQS as an event source for the consumer Lambda
     // This creates an event source mapping that automatically polls SQS
@@ -117,6 +137,27 @@ export class FirstSqsStack extends cdk.Stack {
     // Add POST method to the /orders endpoint
     // Links the HTTP POST request to the producer Lambda function
     orders.addMethod("POST", new apigateway.LambdaIntegration(producerLambda));
+
+    // ========================================
+    // GET ORDERS LAMBDA FUNCTION
+    // ========================================
+    // Lambda function to retrieve orders from DynamoDB
+    const getOrdersLambda = new NodejsFunction(this, "GetOrders", {
+      runtime: lambdaBase.Runtime.NODEJS_22_X,
+      entry: path.join(__dirname, "../src/lambda/handler.ts"),
+      handler: "getOrders",
+      functionName: `${this.stackName}-get-orders`,
+      environment: {
+        TABLE_NAME: ordersTable.tableName,
+      },
+    });
+
+    // Grant the GET orders Lambda permission to read from DynamoDB
+    ordersTable.grantReadData(getOrdersLambda);
+
+    // Add GET method to the /orders endpoint
+    // Links the HTTP GET request to the getOrders Lambda function
+    orders.addMethod("GET", new apigateway.LambdaIntegration(getOrdersLambda));
 
     // ========================================
     // OUTPUT VALUES

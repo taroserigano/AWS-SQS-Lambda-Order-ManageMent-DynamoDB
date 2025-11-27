@@ -1,0 +1,264 @@
+/* ========================================
+   GLOBAL DARK MODE STYLES
+   ======================================== */
+
+/* CSS Variables for Theme Colors */
+:root {
+  /* Light Theme Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f7fa;
+  --bg-gradient-start: #f5f7fa;
+  --bg-gradient-end: #c3cfe2;
+
+  --text-primary: #2c3e50;
+  --text-secondary: #7f8c8d;
+  --text-muted: #95a5a6;
+
+  --border-color: #e1e8ed;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --shadow-hover: rgba(0, 0, 0, 0.15);
+
+  --card-bg: #ffffff;
+  --input-bg: #ffffff;
+  --input-border: #dfe6e9;
+  --form-input-bg: #f7f9ff;
+  --form-input-text: #0f172a;
+  --form-input-border: #ccd9f0;
+  --form-input-placeholder: #5f6c80;
+
+  --primary-color: #667eea;
+  --success-color: #00b894;
+  --warning-color: #fdcb6e;
+  --danger-color: #d63031;
+  --info-color: #74b9ff;
+
+  /* Transition speed for smooth theme switching */
+  --theme-transition: all 0.3s ease;
+}
+
+/* Dark Theme Colors */
+[data-theme="dark"] {
+  --bg-primary: #1e272e;
+  --bg-secondary: #2c3e50;
+  --bg-gradient-start: #2c3e50;
+  --bg-gradient-end: #34495e;
+
+  --text-primary: #ecf0f1;
+  --text-secondary: #bdc3c7;
+  --text-muted: #95a5a6;
+
+  --border-color: #404b56;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --shadow-hover: rgba(0, 0, 0, 0.4);
+
+  --card-bg: #34495e;
+  --input-bg: #2c3e50;
+  --input-border: #404b56;
+  --form-input-bg: rgba(28, 37, 53, 0.85);
+  --form-input-text: #f4f6fb;
+  --form-input-border: rgba(255, 255, 255, 0.25);
+  --form-input-placeholder: rgba(226, 232, 240, 0.7);
+
+  --primary-color: #a29bfe;
+  --success-color: #55efc4;
+  --warning-color: #ffeaa7;
+  --danger-color: #ff7675;
+  --info-color: #74b9ff;
+}
+
+/* Apply theme colors to body */
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: var(--theme-transition);
+}
+
+/* App Container */
+.App {
+  background: var(--bg-gradient-start);
+  transition: var(--theme-transition);
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  position: fixed;
+  top: 28px;
+  right: 28px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.2) 0%,
+    rgba(139, 92, 246, 0.2) 100%
+  );
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1) rotate(20deg);
+  box-shadow: 0 15px 50px rgba(99, 102, 241, 0.5),
+    inset 0 2px 4px rgba(255, 255, 255, 0.15);
+  border-color: rgba(99, 102, 241, 0.6);
+}
+
+.theme-toggle:active {
+  transform: scale(1.05) rotate(10deg);
+  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4),
+    inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Cards and Containers */
+.order-form,
+.order-list,
+.order-filter,
+.order-analytics,
+.advanced-analytics,
+.chart-card,
+.stat-card {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+  box-shadow: 0 8px 32px var(--shadow-color), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 20px;
+}
+
+.order-form:hover,
+.chart-card:hover,
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 48px var(--shadow-hover),
+    0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+/* Form Inputs */
+input,
+textarea,
+select {
+  background: var(--input-bg);
+  color: var(--text-primary);
+  border-color: var(--input-border);
+  transition: var(--theme-transition);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Buttons */
+button {
+  transition: var(--theme-transition);
+}
+
+.primary-button {
+  background: var(--primary-color);
+  color: white;
+}
+
+.success-button {
+  background: var(--success-color);
+  color: white;
+}
+
+.warning-button {
+  background: var(--warning-color);
+  color: var(--text-primary);
+}
+
+.danger-button {
+  background: var(--danger-color);
+  color: white;
+}
+
+/* Order Cards */
+.order-card {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+  transition: var(--theme-transition);
+}
+
+.order-card:hover {
+  box-shadow: 0 6px 20px var(--shadow-hover);
+}
+
+/* Status Badges */
+.status-badge {
+  transition: var(--theme-transition);
+}
+
+.status-pending {
+  background-color: var(--warning-color);
+  color: var(--text-primary);
+}
+
+.status-processing {
+  background-color: var(--info-color);
+  color: white;
+}
+
+.status-completed {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.status-failed {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+/* Charts in Dark Mode */
+[data-theme="dark"] .chart-card h3,
+[data-theme="dark"] .stat-value {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .stat-label,
+[data-theme="dark"] .analytics-header p {
+  color: var(--text-secondary);
+}
+
+/* Scrollbar Styling for Dark Mode */
+[data-theme="dark"] ::-webkit-scrollbar {
+  width: 10px;
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 5px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: #536878;
+}
+
+/* Smooth transitions on theme switch */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+/* Prevent transition on page load */
+.preload * {
+  transition: none !important;
+}

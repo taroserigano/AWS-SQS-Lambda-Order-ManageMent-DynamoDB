@@ -5,12 +5,26 @@
 // React imports for state management and lifecycle hooks
 import React, { useState, useEffect, useMemo } from "react";
 import "./App.css";
+import "./styles/theme.css";
 
 // Component imports with their associated types
 import OrderForm, { OrderFormData } from "./components/OrderForm";
 import OrderHistory, { Order } from "./components/OrderHistory";
 import OrderFilter, { FilterOptions } from "./components/OrderFilter";
 import OrderAnalytics from "./components/OrderAnalytics";
+import AdvancedAnalytics from "./components/AdvancedAnalytics";
+import CSVImport from "./components/CSVImport";
+import CSVExport from "./components/CSVExport";
+
+// Theme context for dark mode support
+import { useTheme } from "./context/ThemeContext";
+
+// Keyboard shortcuts hook for power users
+import {
+  useKeyboardShortcuts,
+  getDefaultShortcuts,
+  ShortcutsHelp,
+} from "./hooks/useKeyboardShortcuts";
 
 // Service for API communication with AWS backend
 import { ApiService } from "./services/api";
@@ -45,10 +59,10 @@ function App() {
   // Loading state for form submission and API calls
   const [isLoading, setIsLoading] = useState(false);
 
-  // View switching between order management and analytics dashboard
-  const [currentView, setCurrentView] = useState<"orders" | "analytics">(
-    "orders"
-  );
+  // View switching between order management, analytics, and advanced analytics
+  const [currentView, setCurrentView] = useState<
+    "orders" | "analytics" | "advanced"
+  >("orders");
 
   // Complex filtering state for advanced order search and sorting
   const [filters, setFilters] = useState<FilterOptions>({
@@ -66,37 +80,55 @@ function App() {
     type: "success" | "error";
   } | null>(null);
 
+  // CSV Import/Export modal states
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+
+  // Keyboard shortcuts help modal
+  const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
+
+  // Theme management (dark mode)
+  const { theme, toggleTheme } = useTheme();
+
   // ========================================
   // EFFECTS FOR DATA PERSISTENCE
   // ========================================
 
   /**
-   * Load orders from localStorage on component mount
+   * Load orders from DynamoDB via API on component mount
    * Handles date deserialization since JSON.parse doesn't restore Date objects
    */
   useEffect(() => {
-    const savedOrders = localStorage.getItem("orders");
-    if (savedOrders) {
-      const parsedOrders = JSON.parse(savedOrders).map((order: any) => ({
-        ...order,
-        // Convert timestamp string back to Date object
-        timestamp: new Date(order.timestamp),
-        // Handle optional estimated delivery date
-        estimatedDelivery: order.estimatedDelivery
-          ? new Date(order.estimatedDelivery)
-          : undefined,
-      }));
-      setOrders(parsedOrders);
-    }
+    const fetchOrders = async () => {
+      try {
+        setIsLoading(true);
+        const fetchedOrders = await ApiService.getOrders();
+        console.log("Fetched orders from API:", fetchedOrders);
+
+        // Convert timestamp strings back to Date objects
+        const parsedOrders = fetchedOrders.map((order: any) => ({
+          ...order,
+          id: order.id || order.orderId, // Use orderId as fallback
+          timestamp: order.timestamp ? new Date(order.timestamp) : new Date(),
+          estimatedDelivery: order.estimatedDelivery
+            ? new Date(order.estimatedDelivery)
+            : undefined,
+        }));
+
+        setOrders(parsedOrders);
+      } catch (error) {
+        console.error("Error loading orders:", error);
+        showNotification("Failed to load orders from database", "error");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchOrders();
   }, []); // Empty dependency array - runs only on mount
 
-  /**
-   * Save orders to localStorage whenever orders array changes
-   * Provides data persistence across browser sessions
-   */
-  useEffect(() => {
-    localStorage.setItem("orders", JSON.stringify(orders));
-  }, [orders]); // Runs whenever orders array changes
+  // Orders are now persisted in DynamoDB via API calls
+  // No need for localStorage synchronization
 
   // ========================================
   // UTILITY FUNCTIONS
@@ -170,8 +202,18 @@ function App() {
       // API CALL TO AWS BACKEND
       // ========================================
 
-      // Send order to AWS SQS via API Gateway
-      const response = await ApiService.submitOrder(orderData.orderId);
+      // Send complete order data to AWS SQS via API Gateway
+      const response = await ApiService.submitOrder({
+        orderId: newOrder.orderId,
+        customerName: newOrder.customerName || "",
+        customerEmail: newOrder.customerEmail || "",
+        priority: newOrder.priority,
+        status: newOrder.status,
+        orderValue: newOrder.orderValue || 0,
+        timestamp: newOrder.timestamp.toISOString(),
+        estimatedDelivery: newOrder.estimatedDelivery?.toISOString(),
+        items: newOrder.items || [],
+      });
 
       // ========================================
       // UPDATE ORDER STATUS ON SUCCESS
@@ -257,24 +299,84 @@ function App() {
   // ========================================
 
   /**
-   * Clear all order history and remove from localStorage
+   * Clear all order history from local state
+   * Note: This only clears the frontend state, not the database
    * Used by OrderHistory component's clear button
    */
   const handleClearHistory = () => {
     setOrders([]);
-    localStorage.removeItem("orders");
   };
 
   /**
-   * Export filtered orders as JSON file
-   * Creates downloadable file with current filtered dataset
+   * Handle CSV Import - merge imported orders with existing ones
+   */
+  const handleImport = (importedOrders: Order[]) => {
+    setOrders((prev) => [...importedOrders, ...prev]);
+    showNotification(`Imported ${importedOrders.length} orders`, "success");
+  };
+
+  /**
+   * Export filtered orders as CSV file
+   * Creates downloadable CSV file with current filtered dataset
    */
   const handleExport = () => {
-    // Convert filtered orders to JSON string with formatting
-    const dataStr = JSON.stringify(filteredOrders, null, 2);
+    // Transform orders into CSV-friendly format
+    const csvRows = filteredOrders.map((order) => {
+      const orderDate = new Date(order.timestamp).toLocaleString();
+      const estimatedDelivery = order.estimatedDelivery
+        ? new Date(order.estimatedDelivery).toLocaleDateString()
+        : "N/A";
+      const items =
+        order.items
+          ?.map(
+            (item) =>
+              `${item.name} (Qty: ${
+                item.quantity
+              }, Price: $${item.price.toFixed(2)})`
+          )
+          .join(" | ") || "N/A";
+
+      return {
+        "Order ID": order.orderId,
+        "Customer Name": order.customerName || "N/A",
+        "Customer Email": order.customerEmail || "N/A",
+        Priority: order.priority.toUpperCase(),
+        Status: order.status.toUpperCase(),
+        "Order Date": orderDate,
+        "Order Value": `$${(order.orderValue || 0).toFixed(2)}`,
+        "Estimated Delivery": estimatedDelivery,
+        Items: items,
+        Message: order.message || "N/A",
+        "Processing Time": order.processingTime
+          ? `${order.processingTime}s`
+          : "N/A",
+      };
+    });
+
+    // Create CSV header
+    const headers = Object.keys(csvRows[0] || {});
+    const csvHeader = headers.map((h) => `"${h}"`).join(",");
+
+    // Create CSV rows
+    const csvData = csvRows
+      .map((row) => {
+        return headers
+          .map((header) => {
+            const value = String(row[header as keyof typeof row] || "");
+            // Escape quotes and wrap in quotes
+            return `"${value.replace(/"/g, '""')}"`;
+          })
+          .join(",");
+      })
+      .join("\n");
+
+    // Combine header and data
+    const csvContent = csvHeader + "\n" + csvData;
 
     // Create downloadable blob
-    const dataBlob = new Blob([dataStr], { type: "application/json" });
+    const dataBlob = new Blob([csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
     const url = URL.createObjectURL(dataBlob);
 
     // Create temporary download link and trigger download
@@ -282,15 +384,74 @@ function App() {
     link.href = url;
     link.download = `orders-export-${
       new Date().toISOString().split("T")[0] // Current date in YYYY-MM-DD format
-    }.json`;
+    }.csv`;
     link.click();
 
     // Clean up object URL to prevent memory leaks
     URL.revokeObjectURL(url);
 
     // Show success notification with export count
-    showNotification(`Exported ${filteredOrders.length} orders`, "success");
+    showNotification(
+      `Exported ${filteredOrders.length} orders as CSV`,
+      "success"
+    );
   };
+
+  // ========================================
+  // KEYBOARD SHORTCUTS CONFIGURATION
+  // ========================================
+
+  /**
+   * Configure global keyboard shortcuts for power users
+   */
+  const keyboardShortcuts = getDefaultShortcuts({
+    newOrder: () => {
+      setCurrentView("orders");
+      // Focus on order form (scroll to top)
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    toggleTheme: toggleTheme,
+    showHelp: () => setShowShortcutsHelp(true),
+    exportData: () => setShowExportModal(true),
+    importData: () => setShowImportModal(true),
+    refresh: async () => {
+      // Reload orders from API
+      try {
+        setIsLoading(true);
+        const fetchedOrders = await ApiService.getOrders();
+        const parsedOrders = fetchedOrders.map((order: any) => ({
+          ...order,
+          id: order.id || order.orderId,
+          timestamp: order.timestamp ? new Date(order.timestamp) : new Date(),
+          estimatedDelivery: order.estimatedDelivery
+            ? new Date(order.estimatedDelivery)
+            : undefined,
+        }));
+        setOrders(parsedOrders);
+        showNotification("Orders refreshed from database", "success");
+      } catch (error) {
+        console.error("Error refreshing orders:", error);
+        showNotification("Failed to refresh orders", "error");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    closeModal: () => {
+      setShowImportModal(false);
+      setShowExportModal(false);
+      setShowShortcutsHelp(false);
+    },
+    search: () => {
+      // Focus on search input
+      const searchInput = document.querySelector(
+        'input[placeholder*="Search"]'
+      ) as HTMLInputElement;
+      searchInput?.focus();
+    },
+  });
+
+  // Activate keyboard shortcuts
+  useKeyboardShortcuts(keyboardShortcuts);
 
   // ========================================
   // COMPUTED VALUES - FILTERING AND SORTING
@@ -434,8 +595,69 @@ function App() {
           >
             📊 Analytics
           </button>
+          <button
+            className={currentView === "advanced" ? "active" : ""}
+            onClick={() => setCurrentView("advanced")}
+          >
+            📈 Advanced Analytics
+          </button>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="header-actions">
+          <button
+            className="action-button import-button"
+            onClick={() => setShowImportModal(true)}
+            title="Import orders from CSV (Ctrl+I)"
+          >
+            📥 Import
+          </button>
+          <button
+            className="action-button export-button"
+            onClick={() => setShowExportModal(true)}
+            title="Export orders to CSV (Ctrl+E)"
+          >
+            📤 Export
+          </button>
         </div>
       </header>
+
+      {/* ========================================
+          THEME TOGGLE BUTTON
+          ======================================== */}
+      <button
+        className="theme-toggle"
+        onClick={toggleTheme}
+        title={`Switch to ${
+          theme === "light" ? "dark" : "light"
+        } mode (Ctrl+K)`}
+      >
+        {theme === "light" ? "🌙" : "☀️"}
+      </button>
+
+      {/* ========================================
+          SHORTCUTS HELP BUTTON
+          ======================================== */}
+      <button
+        className="shortcuts-button"
+        onClick={() => setShowShortcutsHelp(true)}
+        title="Keyboard shortcuts (Ctrl+/)"
+        style={{
+          position: "fixed",
+          bottom: "20px",
+          right: "20px",
+          width: "50px",
+          height: "50px",
+          borderRadius: "50%",
+          background: "var(--card-bg)",
+          border: "2px solid var(--border-color)",
+          cursor: "pointer",
+          fontSize: "1.5rem",
+          zIndex: 1000,
+        }}
+      >
+        ⌨️
+      </button>
 
       {/* ========================================
           MAIN CONTENT AREA
@@ -474,13 +696,39 @@ function App() {
               onClearHistory={handleClearHistory}
             />
           </>
-        ) : (
+        ) : currentView === "analytics" ? (
           // ========================================
           // ANALYTICS VIEW - Business intelligence dashboard
           // ========================================
           <OrderAnalytics orders={orders} /> // Pass all orders for complete analytics
+        ) : (
+          // ========================================
+          // ADVANCED ANALYTICS VIEW - Charts and visualizations
+          // ========================================
+          <AdvancedAnalytics orders={orders} />
         )}
       </main>
+
+      {/* ========================================
+          MODALS - CSV Import/Export and Shortcuts Help
+          ======================================== */}
+      {showImportModal && (
+        <CSVImport
+          onImport={handleImport}
+          onClose={() => setShowImportModal(false)}
+        />
+      )}
+
+      {showExportModal && (
+        <CSVExport orders={orders} onClose={() => setShowExportModal(false)} />
+      )}
+
+      {showShortcutsHelp && (
+        <ShortcutsHelp
+          shortcuts={keyboardShortcuts}
+          onClose={() => setShowShortcutsHelp(false)}
+        />
+      )}
     </div>
   );
 }

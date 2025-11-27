@@ -1,0 +1,34 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "e5fb78c5b9b457d7147645dd5a4ebb42893a7821505dbaf989fdf8d2da4f43ca": {
+      "displayName": "OrderProducer/Code",
+      "source": {
+        "path": "asset.e5fb78c5b9b457d7147645dd5a4ebb42893a7821505dbaf989fdf8d2da4f43ca",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-37c81da1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e5fb78c5b9b457d7147645dd5a4ebb42893a7821505dbaf989fdf8d2da4f43ca.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "acc0ba5d53d8d62d8b4daaee506bac4c54641fbe16530e2a5e5909a34e3dd380": {
+      "displayName": "FirstSqsStack Template",
+      "source": {
+        "path": "FirstSqsStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-d13f1509": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "acc0ba5d53d8d62d8b4daaee506bac4c54641fbe16530e2a5e5909a34e3dd380.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

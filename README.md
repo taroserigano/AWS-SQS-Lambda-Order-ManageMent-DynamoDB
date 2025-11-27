@@ -1,11 +1,24 @@
 # 🛒 AWS SQS Order Management System
 
-A comprehensive, enterprise-grade order management system built with AWS CDK, featuring serverless architecture, real-time processing, and advanced analytics dashboard.
+A comprehensive, enterprise-grade order management system built with AWS CDK, featuring serverless architecture, real-time processing, advanced analytics dashboard, and **portfolio-ready advanced features**.
 
 ![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 ![AWS CDK](https://img.shields.io/badge/AWS%20CDK-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white)
+
+## ✨ NEW: Advanced Portfolio Features
+
+This project includes **enterprise-level features** designed to impress employers:
+
+- 📊 **Interactive Data Visualization** - Chart.js analytics with 5+ chart types
+- 🌙 **Dark Mode** - Full theme system with localStorage persistence
+- 📥 **CSV Import** - Drag-and-drop bulk import with validation
+- 📤 **CSV Export** - Customizable export with multiple formats
+- ⌨️ **Keyboard Shortcuts** - Power user features (Ctrl+K, Ctrl+E, etc.)
+- 🎯 **Advanced Analytics** - Time-series analysis and business intelligence
+
+👉 **See [ADVANCED_FEATURES.md](./ADVANCED_FEATURES.md) for detailed documentation**
 
 ## 🚀 Features
 
@@ -23,8 +36,12 @@ A comprehensive, enterprise-grade order management system built with AWS CDK, fe
 - ✅ **Advanced Order Form** with dynamic item management
 - ✅ **Real-time Order Tracking** with status updates
 - ✅ **Comprehensive Analytics Dashboard** with business metrics
+- ✅ **Interactive Charts** with Chart.js (NEW!)
+- ✅ **Dark/Light Theme Toggle** (NEW!)
+- ✅ **CSV Import/Export** (NEW!)
+- ✅ **Keyboard Shortcuts** for power users (NEW!)
 - ✅ **Advanced Filtering & Search** across multiple fields
-- ✅ **Data Export** functionality (JSON format)
+- ✅ **Data Export** functionality (JSON/CSV formats)
 - ✅ **Local Storage Persistence** for data retention
 - ✅ **Random Data Generation** for testing
 - ✅ **Responsive Design** for mobile and desktop
@@ -38,6 +55,7 @@ A comprehensive, enterprise-grade order management system built with AWS CDK, fe
 - 📊 **Business Analytics** with KPIs and metrics
 - 📈 **Performance Monitoring** with processing times
 - 🔍 **Advanced Search** and filtering capabilities
+- 📊 **Visual Analytics** with interactive charts (NEW!)
 
 ## 🏗️ Architecture
 
