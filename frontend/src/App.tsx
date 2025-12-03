@@ -15,6 +15,7 @@ import OrderAnalytics from "./components/OrderAnalytics";
 import AdvancedAnalytics from "./components/AdvancedAnalytics";
 import CSVImport from "./components/CSVImport";
 import CSVExport from "./components/CSVExport";
+import NotificationSettings from "./components/NotificationSettings";
 
 // Theme context for dark mode support
 import { useTheme } from "./context/ThemeContext";
@@ -676,6 +677,16 @@ function App() {
           // ORDERS VIEW - Main order management interface
           // ========================================
           <>
+            {/* Email Notification Settings */}
+            <NotificationSettings
+              onSubscribe={async (email, preferences) => {
+                await ApiService.subscribeEmail(email, preferences);
+              }}
+              onUnsubscribe={async (email) => {
+                await ApiService.unsubscribeEmail(email);
+              }}
+            />
+
             {/* Order Submission Form */}
             <OrderForm
               onOrderSubmit={handleOrderSubmit}
