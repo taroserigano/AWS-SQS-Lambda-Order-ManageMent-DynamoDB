@@ -210,13 +210,13 @@ const OrderForm: React.FC<OrderFormProps> = ({ onOrderSubmit, isLoading }) => {
 
       // Show success toast
       const message = `Order ${formData.orderId} submitted successfully! 🎉`;
-      console.log('Showing toast:', message); // Debug log
+      console.log("Showing toast:", message); // Debug log
       setToastMessage(message);
       setShowToast(true);
 
       // Auto-hide toast after 3 seconds
       setTimeout(() => {
-        console.log('Hiding toast'); // Debug log
+        console.log("Hiding toast"); // Debug log
         setShowToast(false);
       }, 3000);
 

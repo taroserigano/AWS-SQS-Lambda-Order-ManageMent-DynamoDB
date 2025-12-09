@@ -1,6 +1,7 @@
 // Base URL for the deployed API Gateway. Replace with your local/dev URL
 // when testing against a local emulator or a different stage.
-const API_BASE_URL = process.env.REACT_APP_API_URL || "YOUR_API_GATEWAY_URL_HERE";
+const API_BASE_URL =
+  process.env.REACT_APP_API_URL || "YOUR_API_GATEWAY_URL_HERE";
 
 // --- Types ---
 // Define the shape of requests/responses so TypeScript helps prevent errors.
@@ -43,7 +44,9 @@ export class ApiService {
       // If response is not ok, capture the body for a clearer error message.
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+        throw new Error(
+          `HTTP error! status: ${response.status}, body: ${errorText}`
+        );
       }
 
       const data = await response.json();
@@ -69,7 +72,9 @@ export class ApiService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+        throw new Error(
+          `HTTP error! status: ${response.status}, body: ${errorText}`
+        );
       }
 
       const data = await response.json();
@@ -103,14 +108,18 @@ export class ApiService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+        throw new Error(
+          `HTTP error! status: ${response.status}, body: ${errorText}`
+        );
       }
 
       const data = await response.json();
       return data;
     } catch (error) {
       throw new Error(
-        error instanceof Error ? `Failed to subscribe: ${error.message}` : "Failed to subscribe: Unknown error"
+        error instanceof Error
+          ? `Failed to subscribe: ${error.message}`
+          : "Failed to subscribe: Unknown error"
       );
     }
   }
@@ -118,22 +127,29 @@ export class ApiService {
   static async unsubscribeEmail(email: string): Promise<{ message: string }> {
     // Ask backend to find and remove the subscription for this email.
     try {
-      const response = await fetch(`${API_BASE_URL}/notifications/unsubscribe`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/notifications/unsubscribe`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+        throw new Error(
+          `HTTP error! status: ${response.status}, body: ${errorText}`
+        );
       }
 
       const data = await response.json();
       return data;
     } catch (error) {
       throw new Error(
-        error instanceof Error ? `Failed to unsubscribe: ${error.message}` : "Failed to unsubscribe: Unknown error"
+        error instanceof Error
+          ? `Failed to unsubscribe: ${error.message}`
+          : "Failed to unsubscribe: Unknown error"
       );
     }
   }
