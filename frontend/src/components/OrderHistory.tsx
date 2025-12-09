@@ -75,7 +75,7 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({
     }
   };
 
-  const getStatusClass = (status: Order["status"]) => {
+  const getStatusClass = (status: Order["status"] | "unknown") => {
     return `status-${status}`;
   };
 
@@ -98,10 +98,12 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({
         <div className="orders-list">
           {orders.map((order) => {
             const isExpanded = expandedOrders.has(order.id);
+            const statusLabel = order.status || "unknown";
+            const priorityLabel = order.priority || "unknown";
             return (
               <div
                 key={order.id}
-                className={`order-item ${getStatusClass(order.status)}`}
+                className={`order-item ${getStatusClass(statusLabel)}`}
               >
                 <div
                   className="order-header"
@@ -123,10 +125,8 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({
                       <span className="timestamp">
                         {order.timestamp.toLocaleString()}
                       </span>
-                      <span
-                        className={`status ${getStatusClass(order.status)}`}
-                      >
-                        {(order.status || "unknown").toUpperCase()}
+                      <span className={`status ${getStatusClass(statusLabel)}`}>
+                        {statusLabel.toUpperCase()}
                       </span>
                     </div>
                   </div>
@@ -156,7 +156,7 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({
                           <strong>Priority:</strong>{" "}
                           <span className="priority-badge">
                             {getPriorityIcon(order.priority)}{" "}
-                            {(order.priority || "unknown").toUpperCase()}
+                            {priorityLabel.toUpperCase()}
                           </span>
                         </p>
                         <p>

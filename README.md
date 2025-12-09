@@ -7,7 +7,7 @@
 [![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)](https://reactjs.org/)
 [![AWS CDK](https://img.shields.io/badge/AWS%20CDK-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white)](https://aws.amazon.com/cdk/)
 
-**[Live Demo](https://your-app-name.vercel.app)** | [Architecture](#-architecture) | [Features](#-key-features)
+**[Live Demo](https://your-app.netlify.app)** | [Architecture](#-architecture) | [Features](#-key-features)
 
 ---
 
@@ -316,6 +316,7 @@ npm run test:e2e
 ### Frontend (Render/Netlify/Vercel)
 
 **Render:**
+
 ```bash
 # Configure in Render dashboard
 Build Command: npm install && npm run build
@@ -324,6 +325,7 @@ Root Directory: frontend
 ```
 
 **Netlify:**
+
 ```bash
 cd frontend
 npm run build
@@ -331,6 +333,7 @@ netlify deploy --prod --dir=build
 ```
 
 **Vercel:**
+
 ```bash
 cd frontend
 vercel --prod
@@ -349,13 +352,13 @@ cdk deploy
 
 ## 📈 Performance & Scalability
 
-| Metric | Value |
-|--------|-------|
-| **Lambda Cold Start** | < 200ms |
-| **API Response Time** | < 100ms (p95) |
-| **SQS Throughput** | 3000+ msg/sec |
+| Metric                  | Value                  |
+| ----------------------- | ---------------------- |
+| **Lambda Cold Start**   | < 200ms                |
+| **API Response Time**   | < 100ms (p95)          |
+| **SQS Throughput**      | 3000+ msg/sec          |
 | **DynamoDB Read/Write** | On-demand auto-scaling |
-| **Frontend Load Time** | < 2s (Lighthouse 90+) |
+| **Frontend Load Time**  | < 2s (Lighthouse 90+)  |
 
 ---
 
@@ -375,14 +378,14 @@ cdk deploy
 
 ### Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| `Ctrl + N` | New Order |
-| `Ctrl + K` | Toggle Theme |
-| `Ctrl + E` | Export Data |
-| `Ctrl + I` | Import CSV |
+| Shortcut   | Action         |
+| ---------- | -------------- |
+| `Ctrl + N` | New Order      |
+| `Ctrl + K` | Toggle Theme   |
+| `Ctrl + E` | Export Data    |
+| `Ctrl + I` | Import CSV     |
 | `Ctrl + /` | Show Shortcuts |
-| `Ctrl + F` | Search Orders |
+| `Ctrl + F` | Search Orders  |
 
 ### Dark Mode
 
@@ -463,7 +466,7 @@ MIT License - see [LICENSE](LICENSE) file
 
 **Project Link**: [https://github.com/yourusername/aws-sqs-order-management](https://github.com/yourusername/aws-sqs-order-management)
 
-**Live Demo**: [https://your-app-name.vercel.app](https://your-app-name.vercel.app)
+**Live Demo**: [https://your-app.netlify.app](https://your-app.netlify.app)
 
 ---
 
