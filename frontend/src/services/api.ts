@@ -1,7 +1,6 @@
 // Base URL for the deployed API Gateway. Replace with your local/dev URL
 // when testing against a local emulator or a different stage.
-const API_BASE_URL =
-  "https://u62q7jktce.execute-api.us-east-2.amazonaws.com/prod";
+const API_BASE_URL = process.env.REACT_APP_API_URL || "YOUR_API_GATEWAY_URL_HERE";
 
 // --- Types ---
 // Define the shape of requests/responses so TypeScript helps prevent errors.

@@ -49,6 +49,20 @@ import { ApiService } from "./services/api";
  * - filters: Complex filtering options for order display
  * - notification: User feedback system for success/error messages
  */
+// VIEW INITIALIZATION FROM URL/LOCALSTORAGE
+const resolveInitialView = (): "orders" | "analytics" | "advanced" => {
+  if (typeof window === "undefined") return "analytics";
+  const valid = (v: string | null): v is "orders" | "analytics" | "advanced" =>
+    v === "orders" || v === "analytics" || v === "advanced";
+  const paramsView = new URLSearchParams(window.location.search).get("view");
+  const hashView = window.location.hash.replace("#", "") || null;
+  const storedView = localStorage.getItem("currentView");
+  if (valid(paramsView)) return paramsView;
+  if (valid(hashView)) return hashView;
+  if (valid(storedView)) return storedView;
+  return "analytics"; // fallback is no longer "orders"
+};
+
 function App() {
   // ========================================
   // STATE DECLARATIONS
@@ -63,7 +77,7 @@ function App() {
   // View switching between order management, analytics, and advanced analytics
   const [currentView, setCurrentView] = useState<
     "orders" | "analytics" | "advanced"
-  >("orders");
+  >(resolveInitialView);
 
   // Complex filtering state for advanced order search and sorting
   const [filters, setFilters] = useState<FilterOptions>({
@@ -341,8 +355,8 @@ function App() {
         "Order ID": order.orderId,
         "Customer Name": order.customerName || "N/A",
         "Customer Email": order.customerEmail || "N/A",
-        Priority: order.priority.toUpperCase(),
-        Status: order.status.toUpperCase(),
+        Priority: (order.priority || "unknown").toUpperCase(),
+        Status: (order.status || "unknown").toUpperCase(),
         "Order Date": orderDate,
         "Order Value": `$${(order.orderValue || 0).toFixed(2)}`,
         "Estimated Delivery": estimatedDelivery,
@@ -570,6 +584,29 @@ function App() {
   }, [orders, filters]); // Recalculate when orders or filters change
 
   // ========================================
+  // VIEW PERSISTENCE TO URL/LOCALSTORAGE
+  // ========================================
+
+  useEffect(() => {
+    // Persist view selection for deep-linking Advanced Analytics
+    if (typeof window === "undefined") return;
+    localStorage.setItem("currentView", currentView);
+    const url = new URL(window.location.href);
+    url.searchParams.set("view", currentView);
+    window.history.replaceState(null, "", url.toString());
+  }, [currentView]);
+
+  // ========================================
+  // VIEW CHANGE HANDLER
+  // ========================================
+
+  /**
+   * Centralized handler for view switching
+   */
+  const handleViewChange = (view: "orders" | "analytics" | "advanced") =>
+    setCurrentView(view);
+
+  // ========================================
   // COMPONENT RENDER
   // ========================================
 
@@ -586,19 +623,19 @@ function App() {
         <div className="view-toggle">
           <button
             className={currentView === "orders" ? "active" : ""}
-            onClick={() => setCurrentView("orders")}
+            onClick={() => handleViewChange("orders")}
           >
             📋 Orders
           </button>
           <button
             className={currentView === "analytics" ? "active" : ""}
-            onClick={() => setCurrentView("analytics")}
+            onClick={() => handleViewChange("analytics")}
           >
             📊 Analytics
           </button>
           <button
             className={currentView === "advanced" ? "active" : ""}
-            onClick={() => setCurrentView("advanced")}
+            onClick={() => handleViewChange("advanced")}
           >
             📈 Advanced Analytics
           </button>

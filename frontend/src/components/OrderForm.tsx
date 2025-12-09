@@ -190,6 +190,10 @@ const OrderForm: React.FC<OrderFormProps> = ({ onOrderSubmit, isLoading }) => {
     items: [{ name: "", quantity: 1, price: 0 }], // Start with one empty item
   });
 
+  // Toast notification state
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
   // ========================================
   // EVENT HANDLERS
   // ========================================
@@ -203,6 +207,19 @@ const OrderForm: React.FC<OrderFormProps> = ({ onOrderSubmit, isLoading }) => {
     // Basic validation - ensure required fields are filled
     if (formData.orderId.trim() && formData.customerName.trim()) {
       onOrderSubmit(formData);
+
+      // Show success toast
+      const message = `Order ${formData.orderId} submitted successfully! 🎉`;
+      console.log('Showing toast:', message); // Debug log
+      setToastMessage(message);
+      setShowToast(true);
+
+      // Auto-hide toast after 3 seconds
+      setTimeout(() => {
+        console.log('Hiding toast'); // Debug log
+        setShowToast(false);
+      }, 3000);
+
       // Reset form to default state after successful submission
       setFormData({
         orderId: "",
@@ -438,6 +455,9 @@ const OrderForm: React.FC<OrderFormProps> = ({ onOrderSubmit, isLoading }) => {
           </button>
         </div>
       </form>
+
+      {/* Toast Notification below the form */}
+      {showToast && <div className="toast-notification">{toastMessage}</div>}
     </div>
   );
 };

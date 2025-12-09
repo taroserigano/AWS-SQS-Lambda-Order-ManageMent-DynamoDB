@@ -99,33 +99,26 @@
 }
 
 .view-toggle {
-  display: inline-flex;
-  gap: 0.5rem;
-  background: rgba(30, 58, 138, 0.5);
-  padding: 0.5rem;
-  border-radius: 20px;
-  backdrop-filter: blur(30px);
-  border: 1px solid rgba(147, 197, 253, 0.3);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+  margin: 20px 0;
+  width: 100%; /* Ensure full width */
+  max-width: none; /* Remove any width restrictions */
 }
 
 .view-toggle button {
-  padding: 1rem 2.25rem;
+  padding: 10px 20px;
   border: none;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.92);
-  font-size: 1rem;
-  font-weight: 700;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  letter-spacing: 0.8px;
-  white-space: nowrap;
-  text-transform: uppercase;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  font-size: 0.95rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  min-width: 150px; /* Ensure buttons are wide enough */
+  flex: 0 1 auto; /* Don't grow, shrink if needed, auto basis */
 }
 
 .view-toggle button:hover {
@@ -137,7 +130,7 @@
 }
 
 .view-toggle button.active {
-  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  background: rgba(255, 255, 255, 0.3);
   color: white;
   box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
@@ -349,4 +342,27 @@
   .App-header p {
     font-size: 1rem;
   }
+}
+
+/* Improve contrast for customer name in order cards */
+.order-card .order-meta,
+.order-card .order-meta *,
+.order-card .customer-name,
+.order-card .customer-name * {
+  color: #ffffff !important;
+  font-weight: 700;
+  opacity: 1;
+}
+
+/* Order History row text contrast */
+.order-card,
+.order-card * {
+  color: #e9eeff !important;
+  opacity: 1;
+}
+
+/* Keep badges legible */
+.order-card .status-badge,
+.order-card .priority-badge {
+  color: #ffffff !important;
 }

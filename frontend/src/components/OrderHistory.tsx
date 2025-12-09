@@ -126,7 +126,7 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({
                       <span
                         className={`status ${getStatusClass(order.status)}`}
                       >
-                        {order.status.toUpperCase()}
+                        {(order.status || "unknown").toUpperCase()}
                       </span>
                     </div>
                   </div>
@@ -156,7 +156,7 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({
                           <strong>Priority:</strong>{" "}
                           <span className="priority-badge">
                             {getPriorityIcon(order.priority)}{" "}
-                            {order.priority.toUpperCase()}
+                            {(order.priority || "unknown").toUpperCase()}
                           </span>
                         </p>
                         <p>
