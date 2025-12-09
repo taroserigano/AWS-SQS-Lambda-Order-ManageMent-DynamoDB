@@ -7,7 +7,7 @@
 [![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)](https://reactjs.org/)
 [![AWS CDK](https://img.shields.io/badge/AWS%20CDK-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white)](https://aws.amazon.com/cdk/)
 
-**[Live Demo](#) | [Architecture](#-architecture) | [Features](#-key-features)**
+**[Live Demo](https://your-app-name.vercel.app)** | [Architecture](#-architecture) | [Features](#-key-features)
 
 ---
 
@@ -463,7 +463,7 @@ MIT License - see [LICENSE](LICENSE) file
 
 **Project Link**: [https://github.com/yourusername/aws-sqs-order-management](https://github.com/yourusername/aws-sqs-order-management)
 
-**Live Demo**: [https://your-app.render.com](https://your-app.render.com)
+**Live Demo**: [https://your-app-name.vercel.app](https://your-app-name.vercel.app)
 
 ---
 
