@@ -7,7 +7,10 @@
 [![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)](https://reactjs.org/)
 [![AWS CDK](https://img.shields.io/badge/AWS%20CDK-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white)](https://aws.amazon.com/cdk/)
 
-**[Live Demo](https://your-app.netlify.app)** | [Architecture](#-architecture) | [Features](#-key-features)
+**[Live Demo](https://aws-sqs-lambda-order-manage-ment-dy.vercel.app/?view=orders)** | [Architecture](#-architecture) | [Features](#-key-features)
+
+<img width="1909" height="938" alt="image" src="https://github.com/user-attachments/assets/4f908dbf-a559-4c49-a8e3-1e34c389f27f" />
+
 
 ---
 
@@ -56,6 +59,31 @@ A production-ready, enterprise-grade order management system built with **AWS se
 - 🛡️ **Security Best Practices** - Encryption, VPC, security groups
 
 ---
+
+<img width="1878" height="928" alt="image" src="https://github.com/user-attachments/assets/225bfbbf-d2f0-439c-87fa-7cc42eca7153" />
+
+
+<img width="1895" height="931" alt="image" src="https://github.com/user-attachments/assets/240cf549-449d-4c9f-88fc-b4e4b7a6f95f" />
+
+<img width="1895" height="941" alt="image" src="https://github.com/user-attachments/assets/07a8481a-e994-42cb-9aad-a21c578f8b26" />
+
+<img width="1895" height="929" alt="image" src="https://github.com/user-attachments/assets/66f4d757-6275-4599-bf7f-f174ba58685c" />
+
+## import your CSV
+
+
+<img width="1895" height="927" alt="image" src="https://github.com/user-attachments/assets/93a90868-8a19-4af0-99e8-ee7f131eb6a9" />
+
+## Export all the order histody data 
+<img width="1897" height="927" alt="image" src="https://github.com/user-attachments/assets/b4ed7de8-f2aa-4b48-8791-a15f7c0f962e" />
+
+<img width="1907" height="824" alt="image" src="https://github.com/user-attachments/assets/15bf2903-c963-43b4-a061-93d24305631e" />
+
+## Live Advanced Analytics including Heat Map 
+
+<img width="1903" height="932" alt="image" src="https://github.com/user-attachments/assets/e054dba5-7d4a-46fb-9dca-66f2834ed48e" />
+
+<img width="1893" height="940" alt="image" src="https://github.com/user-attachments/assets/553915ba-c6be-4dac-9bcb-8b80b9192f3a" />
 
 ## 🛠️ Tech Stack
 
