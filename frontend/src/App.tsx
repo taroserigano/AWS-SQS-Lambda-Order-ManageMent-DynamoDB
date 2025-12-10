@@ -324,10 +324,80 @@ function App() {
 
   /**
    * Handle CSV Import - merge imported orders with existing ones
+   * and submit them to the backend API for persistence
    */
-  const handleImport = (importedOrders: Order[]) => {
-    setOrders((prev) => [...importedOrders, ...prev]);
-    showNotification(`Imported ${importedOrders.length} orders`, "success");
+  const handleImport = async (importedOrders: Order[]) => {
+    setIsLoading(true);
+    let successCount = 0;
+    let failureCount = 0;
+
+    try {
+      // Add imported orders to local state immediately for UI responsiveness
+      setOrders((prev) => [...importedOrders, ...prev]);
+      
+      // Submit each order to the backend API
+      for (const order of importedOrders) {
+        try {
+          await ApiService.submitOrder({
+            orderId: order.orderId,
+            customerName: order.customerName || "",
+            customerEmail: order.customerEmail || "",
+            priority: order.priority,
+            status: order.status,
+            orderValue: order.orderValue || 0,
+            timestamp: order.timestamp.toISOString(),
+            estimatedDelivery: order.estimatedDelivery?.toISOString(),
+            items: order.items || [],
+          });
+          successCount++;
+          
+          // Update order status to processing after successful API submission
+          setOrders((prev) =>
+            prev.map((o) =>
+              o.id === order.id
+                ? { ...o, status: "processing" as const }
+                : o
+            )
+          );
+        } catch (error) {
+          failureCount++;
+          console.error(`Failed to import order ${order.orderId}:`, error);
+          
+          // Update order status to failed
+          setOrders((prev) =>
+            prev.map((o) =>
+              o.id === order.id
+                ? { 
+                    ...o, 
+                    status: "failed" as const,
+                    message: error instanceof Error ? error.message : "Import failed"
+                  }
+                : o
+            )
+          );
+        }
+      }
+
+      // Show notification with results
+      if (failureCount === 0) {
+        showNotification(
+          `Successfully imported ${successCount} orders`,
+          "success"
+        );
+      } else if (successCount === 0) {
+        showNotification(
+          `Failed to import all ${failureCount} orders`,
+          "error"
+        );
+      } else {
+        showNotification(
+          `Imported ${successCount} orders, ${failureCount} failed`,
+          "error"
+        );
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   /**
