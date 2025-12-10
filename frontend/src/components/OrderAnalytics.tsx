@@ -36,7 +36,7 @@ interface OrderAnalyticsProps {
  *
  * @param orders - Array of all orders for comprehensive analysis
  */
-const OrderAnalytics: React.FC<OrderAnalyticsProps> = ({ orders }) => {
+const OrderAnalytics: React.FC<OrderAnalyticsProps> = React.memo(({ orders }) => {
   // ========================================
   // BASIC ORDER STATISTICS
   // ========================================
@@ -260,6 +260,6 @@ const OrderAnalytics: React.FC<OrderAnalyticsProps> = ({ orders }) => {
       </div>
     </div>
   );
-};
+});
 
 export default OrderAnalytics;

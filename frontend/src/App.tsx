@@ -3,7 +3,7 @@
 // ========================================
 
 // React imports for state management and lifecycle hooks
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import "./App.css";
 import "./styles/theme.css";
 
@@ -123,7 +123,6 @@ function App() {
       try {
         setIsLoading(true);
         const fetchedOrders = await ApiService.getOrders();
-        console.log("Fetched orders from API:", fetchedOrders);
 
         // Convert timestamp strings back to Date objects
         const parsedOrders = fetchedOrders.map((order: any) => ({
@@ -340,19 +339,17 @@ function App() {
    * Note: This only clears the frontend state, not the database
    * Used by OrderHistory component's clear button
    */
-  const handleClearHistory = () => {
+  const handleClearHistory = useCallback(() => {
     setOrders([]);
-  };
+  }, []);
 
   /**
    * Handle CSV Import - queue imported orders for manual submission
    */
   const handleImport = (importedOrders: Order[]) => {
-    console.log("handleImport called with orders:", importedOrders.length);
     setPendingOrders(importedOrders);
     // Load the first order into the form
     if (importedOrders.length > 0) {
-      console.log("Setting current imported order:", importedOrders[0].orderId);
       setCurrentImportedOrder(importedOrders[0]);
       setCurrentView("orders"); // Switch to orders view
       showNotification(
@@ -385,7 +382,6 @@ function App() {
       );
     } else {
       // No more orders in queue
-      console.log("No more orders in queue");
       setCurrentImportedOrder(null);
       showNotification("All imported orders have been processed.", "success");
     }
@@ -673,8 +669,9 @@ function App() {
   /**
    * Centralized handler for view switching
    */
-  const handleViewChange = (view: "orders" | "analytics" | "advanced") =>
+  const handleViewChange = useCallback((view: "orders" | "analytics" | "advanced") => {
     setCurrentView(view);
+  }, []);
 
   // ========================================
   // COMPONENT RENDER
