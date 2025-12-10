@@ -445,12 +445,6 @@ aws-sqs-order-management/
 
 ---
 
-## 📝 License
-
-MIT License - see [LICENSE](LICENSE) file
-
----
-
 ## 🌟 Acknowledgments
 
 - **AWS** - Serverless services and CDK
@@ -458,17 +452,6 @@ MIT License - see [LICENSE](LICENSE) file
 - **Chart.js** - Beautiful data visualization
 - **TypeScript** - Type safety and developer experience
 
----
-
-## 📧 Contact
-
-**Your Name** - [your.email@example.com](mailto:your.email@example.com)
-
-**Project Link**: [https://github.com/yourusername/aws-sqs-order-management](https://github.com/yourusername/aws-sqs-order-management)
-
-**Live Demo**: [https://your-app.netlify.app](https://your-app.netlify.app)
-
----
 
 <div align="center">
 
