@@ -102,6 +102,11 @@ function App() {
   // Keyboard shortcuts help modal
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
 
+  // Pending orders queue from CSV import
+  const [pendingOrders, setPendingOrders] = useState<Order[]>([]);
+  const [currentImportedOrder, setCurrentImportedOrder] =
+    useState<Order | null>(null);
+
   // Theme management (dark mode)
   const { theme, toggleTheme } = useTheme();
 
@@ -253,6 +258,23 @@ function App() {
         "success"
       );
 
+      // If this was an imported order, load the next one
+      console.log("Checking if imported order:", {
+        currentImportedOrder: currentImportedOrder?.orderId,
+        submittedOrderId: orderData.orderId,
+        match: currentImportedOrder?.orderId === orderData.orderId,
+      });
+
+      if (
+        currentImportedOrder &&
+        currentImportedOrder.orderId === orderData.orderId
+      ) {
+        console.log("Calling loadNextImportedOrder");
+        loadNextImportedOrder();
+      } else {
+        console.log("NOT calling loadNextImportedOrder - no match");
+      }
+
       // ========================================
       // SIMULATE ORDER PROCESSING COMPLETION
       // ========================================
@@ -323,11 +345,59 @@ function App() {
   };
 
   /**
-   * Handle CSV Import - merge imported orders with existing ones
+   * Handle CSV Import - queue imported orders for manual submission
    */
   const handleImport = (importedOrders: Order[]) => {
-    setOrders((prev) => [...importedOrders, ...prev]);
-    showNotification(`Imported ${importedOrders.length} orders`, "success");
+    console.log("handleImport called with orders:", importedOrders.length);
+    setPendingOrders(importedOrders);
+    // Load the first order into the form
+    if (importedOrders.length > 0) {
+      console.log("Setting current imported order:", importedOrders[0].orderId);
+      setCurrentImportedOrder(importedOrders[0]);
+      setCurrentView("orders"); // Switch to orders view
+      showNotification(
+        `Imported ${importedOrders.length} orders. First order loaded into form.`,
+        "success"
+      );
+    }
+  };
+
+  /**
+   * Load next order from import queue into the form
+   */
+  const loadNextImportedOrder = () => {
+    console.log(
+      "loadNextImportedOrder called. Current queue length:",
+      pendingOrders.length
+    );
+    // Remove the current order from the queue
+    const remaining = pendingOrders.slice(1);
+    console.log("Remaining orders after slice:", remaining.length);
+    setPendingOrders(remaining);
+
+    if (remaining.length > 0) {
+      // Load the next order
+      console.log("Loading next order:", remaining[0].orderId);
+      setCurrentImportedOrder(remaining[0]);
+      showNotification(
+        `Loading next order. ${remaining.length} remaining.`,
+        "success"
+      );
+    } else {
+      // No more orders in queue
+      console.log("No more orders in queue");
+      setCurrentImportedOrder(null);
+      showNotification("All imported orders have been processed.", "success");
+    }
+  };
+
+  /**
+   * Clear the import queue
+   */
+  const clearImportQueue = () => {
+    setPendingOrders([]);
+    setCurrentImportedOrder(null);
+    showNotification("Import queue cleared.", "success");
   };
 
   /**
@@ -728,6 +798,9 @@ function App() {
             <OrderForm
               onOrderSubmit={handleOrderSubmit}
               isLoading={isLoading}
+              importedOrder={currentImportedOrder}
+              importQueueCount={pendingOrders.length}
+              onClearQueue={clearImportQueue}
             />
 
             {/* Advanced Filtering Controls */}

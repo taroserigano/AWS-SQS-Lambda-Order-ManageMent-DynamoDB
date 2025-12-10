@@ -2,7 +2,7 @@
 // ORDER FORM COMPONENT
 // ========================================
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./OrderForm.css";
 
 // ========================================
@@ -155,6 +155,15 @@ export interface OrderFormData {
 interface OrderFormProps {
   onOrderSubmit: (orderData: OrderFormData) => void; // Callback for form submission
   isLoading: boolean; // Loading state from parent
+  importedOrder?: {
+    orderId: string;
+    priority: "low" | "medium" | "high" | "urgent";
+    customerName?: string;
+    customerEmail?: string;
+    items?: Array<{ name: string; quantity: number; price: number }>;
+  } | null; // Pre-filled order data from CSV import
+  importQueueCount?: number; // Number of orders remaining in import queue
+  onClearQueue?: () => void; // Callback to clear import queue
 }
 
 // ========================================
@@ -175,7 +184,13 @@ interface OrderFormProps {
  * @param onOrderSubmit - Callback function to handle form submission
  * @param isLoading - Loading state to disable form during submission
  */
-const OrderForm: React.FC<OrderFormProps> = ({ onOrderSubmit, isLoading }) => {
+const OrderForm: React.FC<OrderFormProps> = ({
+  onOrderSubmit,
+  isLoading,
+  importedOrder,
+  importQueueCount = 0,
+  onClearQueue,
+}) => {
   // ========================================
   // COMPONENT STATE
   // ========================================
@@ -193,6 +208,33 @@ const OrderForm: React.FC<OrderFormProps> = ({ onOrderSubmit, isLoading }) => {
   // Toast notification state
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+
+  // ========================================
+  // HANDLE IMPORTED ORDER DATA
+  // ========================================
+
+  /**
+   * Populate form when an imported order is provided
+   */
+  useEffect(() => {
+    if (importedOrder) {
+      setFormData({
+        orderId: importedOrder.orderId,
+        priority: importedOrder.priority,
+        customerName: importedOrder.customerName || "",
+        customerEmail: importedOrder.customerEmail || "",
+        orderValue:
+          importedOrder.items?.reduce(
+            (sum, item) => sum + item.price * item.quantity,
+            0
+          ) || 0,
+        items:
+          importedOrder.items && importedOrder.items.length > 0
+            ? importedOrder.items
+            : [{ name: "", quantity: 1, price: 0 }],
+      });
+    }
+  }, [importedOrder]);
 
   // ========================================
   // EVENT HANDLERS
@@ -220,15 +262,17 @@ const OrderForm: React.FC<OrderFormProps> = ({ onOrderSubmit, isLoading }) => {
         setShowToast(false);
       }, 3000);
 
-      // Reset form to default state after successful submission
-      setFormData({
-        orderId: "",
-        priority: "medium",
-        customerName: "",
-        customerEmail: "",
-        orderValue: 0,
-        items: [{ name: "", quantity: 1, price: 0 }],
-      });
+      // Only reset form if NOT in import mode (let parent control the form in import mode)
+      if (!importedOrder) {
+        setFormData({
+          orderId: "",
+          priority: "medium",
+          customerName: "",
+          customerEmail: "",
+          orderValue: 0,
+          items: [{ name: "", quantity: 1, price: 0 }],
+        });
+      }
     }
   };
 
@@ -290,8 +334,53 @@ const OrderForm: React.FC<OrderFormProps> = ({ onOrderSubmit, isLoading }) => {
     setFormData(randomData);
   };
 
+  // ========================================
+  // RENDER
+  // ========================================
+
   return (
     <div className="order-form">
+      {/* Import Queue Status Banner */}
+      {importQueueCount > 0 && (
+        <div
+          className="import-queue-banner"
+          style={{
+            backgroundColor: "#e3f2fd",
+            border: "1px solid #2196f3",
+            padding: "12px 16px",
+            borderRadius: "4px",
+            marginBottom: "16px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div>
+            <strong>📥 CSV Import Mode</strong>
+            <p style={{ margin: "4px 0 0 0", fontSize: "14px" }}>
+              Order {importedOrder?.orderId} loaded. {importQueueCount - 1} more
+              order(s) in queue.
+            </p>
+          </div>
+          {onClearQueue && (
+            <button
+              type="button"
+              onClick={onClearQueue}
+              style={{
+                padding: "6px 12px",
+                backgroundColor: "#f44336",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+            >
+              Clear Queue
+            </button>
+          )}
+        </div>
+      )}
+
       <h2>Submit New Order</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-row">

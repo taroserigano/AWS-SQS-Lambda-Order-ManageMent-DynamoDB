@@ -99,8 +99,8 @@ const CSVExport: React.FC<CSVExportProps> = ({ orders, onClose }) => {
         "Order ID": order.orderId,
         "Customer Name": order.customerName || "N/A",
         "Customer Email": order.customerEmail || "N/A",
-        Priority: order.priority.toUpperCase(),
-        Status: order.status.toUpperCase(),
+        Priority: order.priority ? order.priority.toUpperCase() : "N/A",
+        Status: order.status ? order.status.toUpperCase() : "N/A",
         "Order Date": format(new Date(order.timestamp), "yyyy-MM-dd HH:mm:ss"),
         "Total Amount": `$${calculateTotal(order).toFixed(2)}`,
         "Item Count": order.items?.length || 0,
@@ -129,42 +129,60 @@ const CSVExport: React.FC<CSVExportProps> = ({ orders, onClose }) => {
   const handleExport = () => {
     const filteredOrders = getFilteredOrders();
 
+    console.log(
+      "Export clicked. Filtered orders count:",
+      filteredOrders.length
+    );
+
     if (filteredOrders.length === 0) {
       alert("No orders match the selected filters");
       return;
     }
 
-    // Transform data
-    const exportData = transformOrdersForExport(filteredOrders);
+    try {
+      // Transform data
+      const exportData = transformOrdersForExport(filteredOrders);
+      console.log("Export data prepared:", exportData.length, "rows");
 
-    // Convert to CSV using papaparse
-    const csv = Papa.unparse(exportData, {
-      quotes: true, // Wrap fields in quotes
-      delimiter: ",",
-      header: true,
-    });
+      // Convert to CSV using papaparse
+      const csv = Papa.unparse(exportData, {
+        quotes: true, // Wrap fields in quotes
+        delimiter: ",",
+        header: true,
+      });
 
-    // Add BOM for Excel if selected (helps Excel recognize UTF-8)
-    const csvContent = exportFormat === "excel" ? "\uFEFF" + csv : csv;
+      console.log("CSV generated, length:", csv.length);
 
-    // Create blob and download
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
+      // Add BOM for Excel if selected (helps Excel recognize UTF-8)
+      const csvContent = exportFormat === "excel" ? "\uFEFF" + csv : csv;
 
-    // Generate filename with timestamp
-    const timestamp = format(new Date(), "yyyyMMdd_HHmmss");
-    const filename = `orders_export_${timestamp}.csv`;
+      // Create blob and download
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
 
-    link.setAttribute("href", url);
-    link.setAttribute("download", filename);
-    link.style.visibility = "hidden";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      // Generate filename with timestamp
+      const timestamp = format(new Date(), "yyyyMMdd_HHmmss");
+      const filename = `orders_export_${timestamp}.csv`;
 
-    // Close modal after successful export
-    setTimeout(() => onClose(), 500);
+      link.setAttribute("href", url);
+      link.setAttribute("download", filename);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      console.log("Export successful:", filename);
+
+      // Close modal after successful export
+      setTimeout(() => onClose(), 500);
+    } catch (error) {
+      console.error("Export failed:", error);
+      alert(
+        "Export failed: " +
+          (error instanceof Error ? error.message : "Unknown error")
+      );
+    }
   };
 
   // Get filtered count for preview

@@ -251,8 +251,9 @@
 
 .customer-name {
   flex: 1;
-  font-weight: 500;
-  color: #1a1a1a;
+  font-weight: 400;
+  font-size: medium;
+  color: #000000 !important;
 }
 
 .customer-value {
