@@ -1,4 +1,4 @@
-# 🛒 Enterprise Order Management System
+# 🛒 Serverless Order Management System
 
  **A fully serverless, enterprise-grade Order Management System built on AWS using Lambda, SQS, DynamoDB, API Gateway, SNS subscriptions, and end-to-end Infrastructure-as-Code with CDK (CloudFormation). The platform uses an event-driven architecture with optional EventBridge pipelines and Step Functions orchestration for advanced workflow control—supporting real-time analytics dashboards, automated notifications, CSV ingestion/export, and a high-performance React + TypeScript frontend engineered for operational insights and scale.**
 
